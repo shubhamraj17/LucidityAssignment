@@ -78,8 +78,8 @@ public class CartOfferApplicationTests {
 		List<String> segments = new ArrayList<>();
 		segments.add(segment);
 		OfferRequest offerRequest = new OfferRequest(restaurantId,offerType,DiscountValue,segments);
-		boolean result = addOffer(offerRequest);
-		Assert.assertEquals(result,true);
+		Response response= addOfferApiCall(offerRequest);
+		Assert.assertEquals(response.statusCode(),HttpStatus.SC_OK);
 	}
 
 	@Test
@@ -88,7 +88,7 @@ public class CartOfferApplicationTests {
 		String segment= getUserSegment(1);
 
 		//add Offer
-		addOfferHelper(segment,"FLATX%",10,1);
+		addOfferHelper(segment,"FLATX",10,1);
 
 		//apply Offer
 		ApplyOfferRequest applyOfferRequest= new ApplyOfferRequest(200,1,1);
@@ -237,6 +237,18 @@ public class CartOfferApplicationTests {
 				.contentType(ContentType.JSON)
 				.body(applyOfferRequest)
 				.when().post("/api/v1/cart/apply_offer")
+				.thenReturn();
+		response.prettyPrint();
+
+		return response;
+	}
+
+	public Response addOfferApiCall(OfferRequest offerRequest){
+		RestAssured.baseURI= "http://localhost:9001";
+		Response response= RestAssured.given().log().all()
+				.contentType(ContentType.JSON)
+				.body(offerRequest)
+				.when().post("/api/v1/offer")
 				.thenReturn();
 		response.prettyPrint();
 
